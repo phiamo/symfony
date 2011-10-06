@@ -896,12 +896,12 @@ class Request
 
     public function setDefaultLocale($locale)
     {
-        $this->defaultLocale = $locale;
+        $this->setPhpDefaultLocale($this->defaultLocale = $locale);
     }
 
     public function setLocale($locale)
     {
-        $this->locale = $locale;
+        $this->setPhpDefaultLocale($this->locale = $locale);
     }
 
     public function getLocale()
@@ -1278,5 +1278,18 @@ class Request
             'atom' => array('application/atom+xml'),
             'rss'  => array('application/rss+xml'),
         );
+    }
+
+    private function setPhpDefaultLocale($locale)
+    {
+        // if either the class Locale doesn't exist, or an exception is thrown when
+        // setting the default locale, the intl module is not installed, and
+        // the call can be ignored:
+        try {
+            if (class_exists('Locale', false)) {
+                \Locale::setDefault($locale);
+            }
+        } catch (\Exception $e) {
+        }
     }
 }
